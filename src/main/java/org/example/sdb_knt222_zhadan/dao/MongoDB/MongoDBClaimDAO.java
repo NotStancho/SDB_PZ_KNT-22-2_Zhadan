@@ -69,7 +69,7 @@ public class MongoDBClaimDAO implements ClaimDAO {
 
         Document historyDoc = new Document()
                 .append("employee_id", employeeId)
-                .append("action_date", new java.util.Date())
+                .append("action_date", new java.sql.Timestamp(System.currentTimeMillis()))
                 .append("action_description", "Клієнт подав заявку на ремонт.");
 
         Document claimDoc = new Document()
@@ -210,7 +210,7 @@ public class MongoDBClaimDAO implements ClaimDAO {
                 }
 
                 Claim_History history = new Claim_HistoryBuilder()
-                        .setActionDate(new java.sql.Date(historyDoc.getDate("action_date").getTime()))
+                        .setActionDate(new java.sql.Timestamp(historyDoc.getDate("action_date").getTime()))
                         .setActionDescription(historyDoc.getString("action_description"))
                         .setEmployee(employee)
                         .setClaim(claim)

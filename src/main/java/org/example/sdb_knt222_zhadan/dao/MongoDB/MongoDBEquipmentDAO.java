@@ -2,6 +2,7 @@ package org.example.sdb_knt222_zhadan.dao.MongoDB;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
@@ -55,7 +56,7 @@ public class MongoDBEquipmentDAO implements EquipmentDAO {
 
     @Override
     public void addEquipment(Equipment equipment) {
-        logger.info("Додавання обладнання до MongoDB: {}", equipment.getSerialNumber());
+        // logger.info("Додавання обладнання до MongoDB: {}", equipment.getSerialNumber());
         Document doc = new Document("_id", equipment.getEquipmentId())
                 .append("serial_number", equipment.getSerialNumber())
                 .append("model", equipment.getModel())
@@ -63,7 +64,7 @@ public class MongoDBEquipmentDAO implements EquipmentDAO {
                 .append("purchase_date", equipment.getPurchaseDate());
         try {
             equipmentCollection.insertOne(doc);
-            logger.info("Обладнання з серійним номером: {} успішно додано до MongoDB", equipment.getSerialNumber());
+            // logger.info("Обладнання з серійним номером: {} успішно додано до MongoDB", equipment.getSerialNumber());
         } catch (Exception e) {
             logger.error("Помилка під час додавання обладнання до MongoDB: {}", equipment.getSerialNumber(), e);
             throw new RuntimeException("Помилка під час додавання обладнання до MongoDB", e);
@@ -90,6 +91,19 @@ public class MongoDBEquipmentDAO implements EquipmentDAO {
         if (result.getDeletedCount() == 0) {
             logger.warn("Обладнання з ID: {} не знайдено для видалення", equipmentId);
         }
+    }
+
+    public List<Equipment> getEquipmentByModelAndType(String model, String type) {
+        List<Equipment> equipmentList = new ArrayList<>();
+        for (Document doc : equipmentCollection.find(
+                Filters.and(
+                        Filters.eq("model", model),
+                        Filters.eq("type", type)
+                )
+        )) {
+            equipmentList.add(mapDocumentToEquipment(doc));
+        }
+        return equipmentList;
     }
 
     private Equipment mapDocumentToEquipment(Document doc) {

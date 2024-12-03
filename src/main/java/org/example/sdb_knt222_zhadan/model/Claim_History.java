@@ -1,27 +1,18 @@
 package org.example.sdb_knt222_zhadan.model;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 
 public class Claim_History {
-    private int claimHistoryId;
-    private Date actionDate;
+    private Timestamp actionDate;
     private String actionDescription;
     private User employee;
     private Claim claim;
 
-    public int getClaimHistoryId() {
-        return claimHistoryId;
-    }
-
-    public void setClaimHistoryId(int claimHistoryId) {
-        this.claimHistoryId = claimHistoryId;
-    }
-
-    public Date getActionDate() {
+    public Timestamp getActionDate() {
         return actionDate;
     }
 
-    public void setActionDate(Date actionDate) {
+    public void setActionDate(Timestamp actionDate) {
         this.actionDate = actionDate;
     }
 

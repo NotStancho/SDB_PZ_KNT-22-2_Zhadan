@@ -28,7 +28,7 @@ public class MySQLClaim_HistoryDAO implements Claim_HistoryDAO {
     @Override
     public List<Claim_History> getClaimHistoryByClaimId(int claimId) {
         List<Claim_History> historyList = new ArrayList<>();
-        String sql = "SELECT ch.claim_history_id, ch.action_date, ch.action_description, "
+        String sql = "SELECT ch.action_date, ch.action_description, "
                 + "u.user_id, u.firstname, u.lastname, c.claim_id "
                 + "FROM claim_history ch "
                 + "LEFT JOIN user u ON ch.employee_id = u.user_id "
@@ -40,8 +40,7 @@ public class MySQLClaim_HistoryDAO implements Claim_HistoryDAO {
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
                     Claim_History history = new Claim_History();
-                    history.setClaimHistoryId(resultSet.getInt("claim_history_id"));
-                    history.setActionDate(resultSet.getDate("action_date"));
+                    history.setActionDate(resultSet.getTimestamp("action_date"));
                     history.setActionDescription(resultSet.getString("action_description"));
 
                     User employee = new User();

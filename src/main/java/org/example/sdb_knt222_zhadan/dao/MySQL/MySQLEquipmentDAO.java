@@ -91,7 +91,7 @@ public class MySQLEquipmentDAO implements EquipmentDAO {
                 if (generatedKeys.next()) {
                     int generatedId = generatedKeys.getInt(1);
                     equipment.setEquipmentId(generatedId);
-                    logger.info("Обладнання з серійним номером: {} додано з ID: {}", equipment.getSerialNumber(), generatedId);
+                    // logger.info("Обладнання з серійним номером: {} додано з ID: {}", equipment.getSerialNumber(), generatedId);
                 } else {
                     throw new SQLException("Не вдалося отримати ID для нового обладнання.");
                 }
@@ -130,6 +130,24 @@ public class MySQLEquipmentDAO implements EquipmentDAO {
             logger.error("Помилка під час видалення обладнання з ID: " + equipmentId, e);
         }
     }
+
+    public List<Equipment> getEquipmentByModelAndType(String model, String type) {
+        List<Equipment> equipmentList = new ArrayList<>();
+        String sql = "SELECT * FROM equipment WHERE model = ? AND type = ?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, model);
+            statement.setString(2, type);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    equipmentList.add(mapResultSetToEquipment(resultSet));
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Помилка під час виконання SELECT з WHERE для model={} та type={}", model, type, e);
+        }
+        return equipmentList;
+    }
+
 
     private Equipment mapResultSetToEquipment(ResultSet resultSet) throws SQLException {
         return new EquipmentBuilder()

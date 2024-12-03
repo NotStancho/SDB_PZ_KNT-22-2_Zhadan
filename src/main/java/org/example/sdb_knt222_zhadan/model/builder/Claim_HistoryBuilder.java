@@ -5,20 +5,15 @@ import org.example.sdb_knt222_zhadan.model.Claim_History;
 import org.example.sdb_knt222_zhadan.model.User;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 
 public class Claim_HistoryBuilder {
-    private int claimHistoryId;
-    private Date actionDate;
+    private Timestamp actionDate;
     private String actionDescription;
     private User employee;
     private Claim claim;
 
-    public Claim_HistoryBuilder setClaimHistoryId(int claimHistoryId) {
-        this.claimHistoryId = claimHistoryId;
-        return this;
-    }
-
-    public Claim_HistoryBuilder setActionDate(Date actionDate) {
+    public Claim_HistoryBuilder setActionDate(Timestamp actionDate) {
         this.actionDate = actionDate;
         return this;
     }
@@ -40,7 +35,6 @@ public class Claim_HistoryBuilder {
 
     public Claim_History build() {
         Claim_History claimHistory = new Claim_History();
-        claimHistory.setClaimHistoryId(this.claimHistoryId);
         claimHistory.setActionDate(this.actionDate);
         claimHistory.setActionDescription(this.actionDescription);
         claimHistory.setEmployee(this.employee);

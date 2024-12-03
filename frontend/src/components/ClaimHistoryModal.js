@@ -47,8 +47,11 @@ const ClaimHistoryModal = ({ show, handleClose, claimId }) => {
                             </thead>
                             <tbody>
                             {history.map((item) => (
-                                <tr key={item.claimHistoryId}>
-                                    <td>{new Date(item.actionDate).toLocaleDateString()}</td>
+                                //<tr key={item.claimHistoryId}>
+                                <tr key={`${claimId}-${item.employee?.userId}-${item.actionDate}`}>
+                                <td>{new Date(item.actionDate).toLocaleString('ua-UA',
+                                    {year: 'numeric', month: '2-digit', day: '2-digit',
+                                        hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false,})}</td>
                                     <td>{item.employee ? `${item.employee.userId}, ${item.employee.firstname} ${item.employee.lastname}` : 'Невідомий'}</td>
                                     <td>{item.actionDescription}</td>
                                 </tr>

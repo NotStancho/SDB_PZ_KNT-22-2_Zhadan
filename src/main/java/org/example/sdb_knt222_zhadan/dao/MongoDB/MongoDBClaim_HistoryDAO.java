@@ -21,7 +21,6 @@ import static com.mongodb.client.model.Filters.eq;
 @Repository
 public class MongoDBClaim_HistoryDAO implements Claim_HistoryDAO {
     private static final Logger logger = LoggerFactory.getLogger(MongoDBClaim_HistoryDAO.class);
-
     private final MongoCollection<Document> claimCollection;
     private final MongoCollection<Document> userCollection;
 
@@ -55,7 +54,7 @@ public class MongoDBClaim_HistoryDAO implements Claim_HistoryDAO {
                     }
 
                     Claim_History history = new Claim_HistoryBuilder()
-                            .setActionDate(new java.sql.Date(historyDoc.getDate("action_date").getTime()))
+                            .setActionDate(new java.sql.Timestamp(historyDoc.getDate("action_date").getTime()))
                             .setActionDescription(historyDoc.getString("action_description"))
                             .setEmployee(employee)
                             .build();
