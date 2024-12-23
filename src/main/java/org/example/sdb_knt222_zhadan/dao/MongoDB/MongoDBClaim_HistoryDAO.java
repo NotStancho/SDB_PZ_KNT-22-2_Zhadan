@@ -65,4 +65,9 @@ public class MongoDBClaim_HistoryDAO implements Claim_HistoryDAO {
         }
         return historyList;
     }
+
+    @Override
+    public void addClaimHistory(Claim_History history) {
+
+    }
 }

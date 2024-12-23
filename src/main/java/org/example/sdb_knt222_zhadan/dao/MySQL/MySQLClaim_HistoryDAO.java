@@ -9,10 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,5 +58,26 @@ public class MySQLClaim_HistoryDAO implements Claim_HistoryDAO {
             logger.error("Помилка під час отримання історії заявки з ID: " + claimId, e);
         }
         return historyList;
+    }
+
+    public void addClaimHistory(Claim_History history) {
+        String sql = "INSERT INTO claim_history (claim_id, employee_id, action_date, action_description) "
+                + "VALUES (?, ?, ?, ?)";
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, history.getClaim().getClaimId());
+            if (history.getEmployee() != null) {
+                statement.setInt(2, history.getEmployee().getUserId());
+            } else {
+                statement.setNull(2, Types.INTEGER);
+            }
+            statement.setTimestamp(3, history.getActionDate());
+            statement.setString(4, history.getActionDescription());
+
+            statement.executeUpdate();
+            logger.info("Історію заявки з ID: {} додано успішно", history.getClaim().getClaimId());
+        } catch (SQLException e) {
+            logger.error("Помилка під час додавання історії заявки з ID: " + history.getClaim().getClaimId(), e);
+        }
     }
 }
