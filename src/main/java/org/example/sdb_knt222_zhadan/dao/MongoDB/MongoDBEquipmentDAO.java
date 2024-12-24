@@ -1,5 +1,6 @@
 package org.example.sdb_knt222_zhadan.dao.MongoDB;
 
+import com.mongodb.WriteConcern;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
@@ -26,9 +27,15 @@ public class MongoDBEquipmentDAO implements EquipmentDAO {
 
     public MongoDBEquipmentDAO() {
         MongoDatabase database = MongoDBConnection.getDatabase();
-        this.equipmentCollection = database.getCollection("equipment");
+        this.equipmentCollection = database.getCollection("equipment").withWriteConcern(WriteConcern.W1);
         logger.info("Колекція equipment в MongoDB доступна");
     }
+
+//    public MongoDBEquipmentDAO() {
+//        MongoDatabase database = MongoDBConnection.getDatabase();
+//        this.equipmentCollection = database.getCollection("equipment");
+//        logger.info("Колекція equipment в MongoDB доступна");
+//    }
 
     @Override
     public List<Equipment> getAllEquipment() {
@@ -54,10 +61,27 @@ public class MongoDBEquipmentDAO implements EquipmentDAO {
         return doc != null ? mapDocumentToEquipment(doc) : null;
     }
 
+//    @Override
+//    public void addEquipment(Equipment equipment) {
+//        // logger.info("Додавання обладнання до MongoDB: {}", equipment.getSerialNumber());
+//        Document doc = new Document("_id", equipment.getEquipmentId())
+//                .append("serial_number", equipment.getSerialNumber())
+//                .append("model", equipment.getModel())
+//                .append("type", equipment.getType())
+//                .append("purchase_date", equipment.getPurchaseDate());
+//        try {
+//            equipmentCollection.insertOne(doc);
+//            // logger.info("Обладнання з серійним номером: {} успішно додано до MongoDB", equipment.getSerialNumber());
+//        } catch (Exception e) {
+//            logger.error("Помилка під час додавання обладнання до MongoDB: {}", equipment.getSerialNumber(), e);
+//            throw new RuntimeException("Помилка під час додавання обладнання до MongoDB", e);
+//        }
+//    }
+
     @Override
     public void addEquipment(Equipment equipment) {
-        // logger.info("Додавання обладнання до MongoDB: {}", equipment.getSerialNumber());
-        Document doc = new Document("_id", equipment.getEquipmentId())
+        Document doc = new Document()
+                .append("_id", equipment.getEquipmentId())
                 .append("serial_number", equipment.getSerialNumber())
                 .append("model", equipment.getModel())
                 .append("type", equipment.getType())

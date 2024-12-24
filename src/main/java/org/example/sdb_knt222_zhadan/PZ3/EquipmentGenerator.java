@@ -52,8 +52,17 @@ public class EquipmentGenerator {
     }
 
     // Генерація одного запису обладнання
-    public static Map<String, String> generateEquipmentRecord() {
-        Map<String, String> record = new HashMap<>();
+//    public static Map<String, String> generateEquipmentRecord() {
+//        Map<String, String> record = new HashMap<>();
+//        record.put("serial_number", generateSerialNumber());
+//        record.put("model", generateModel());
+//        record.put("type", generateType());
+//        record.put("purchase_date", generatePurchaseDate());
+//        return record;
+//    }
+    public static Map<String, Object> generateEquipmentRecord(int id) {
+        Map<String, Object> record = new HashMap<>();
+        record.put("_id", id); // Унікальний ID
         record.put("serial_number", generateSerialNumber());
         record.put("model", generateModel());
         record.put("type", generateType());
@@ -62,10 +71,18 @@ public class EquipmentGenerator {
     }
 
     // Генерація списку записів
-    public static List<Map<String, String>> generateEquipmentList(int count) {
-        List<Map<String, String>> equipmentList = new ArrayList<>();
+//    public static List<Map<String, String>> generateEquipmentList(int count) {
+//        List<Map<String, String>> equipmentList = new ArrayList<>();
+//        for (int i = 0; i < count; i++) {
+//            equipmentList.add(generateEquipmentRecord());
+//        }
+//        return equipmentList;
+//    }
+
+    public static List<Map<String, Object>> generateEquipmentList(int count) {
+        List<Map<String, Object>> equipmentList = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            equipmentList.add(generateEquipmentRecord());
+            equipmentList.add(generateEquipmentRecord(i + 1)); // Починаємо з 1
         }
         return equipmentList;
     }

@@ -5,30 +5,84 @@ import org.example.sdb_knt222_zhadan.dao.Factory.MySQLDAOFactory;
 import org.example.sdb_knt222_zhadan.dao.MySQL.MySQLEquipmentDAO;
 import org.example.sdb_knt222_zhadan.dao.MongoDB.MongoDBEquipmentDAO;
 import org.example.sdb_knt222_zhadan.model.Equipment;
+import org.example.sdb_knt222_zhadan.model.builder.EquipmentBuilder;
 import org.example.sdb_knt222_zhadan.service.MigrationService;
 
 
 import java.sql.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class PerformanceTest {
     public static void main(String[] args) {
-        MySQLDAOFactory mySQLFactory = new MySQLDAOFactory();
-        MongoDBDAOFactory mongoDBFactory = new MongoDBDAOFactory();
+        MongoDBEquipmentDAO equipmentDAO = new MongoDBEquipmentDAO();
 
-        // Створення екземпляра MigrationService
-        MigrationService migrationService = new MigrationService(mySQLFactory, mongoDBFactory);
+        // Генерація 10,000 записів
+        System.out.println("Генерація записів...");
+        List<Map<String, Object>> equipmentRecords = EquipmentGenerator.generateEquipmentList(10000);
 
-        // Виконання міграції з MySQL до MongoDB
-        System.out.println("=== Міграція з MySQL до MongoDB ===");
-        migrationService.migrateMySQLToMongoDB();
+        // Логіка запису з обробкою помилок
+        System.out.println("Початок запису...");
+        int retries = 3;
+        for (Map<String, Object> record : equipmentRecords) {
+            boolean success = false;
+            int attempt = 0;
 
-        // Виконання міграції з MongoDB до MySQL
-        System.out.println("=== Міграція з MongoDB до MySQL ===");
-        migrationService.migrateMongoDBToMySQL();
+            while (!success && attempt < retries) {
+                try {
+                    // Перетворення Map у Equipment
+                    Equipment equipment = new EquipmentBuilder()
+                            .setEquipmentId((Integer) record.get("_id"))
+                            .setSerialNumber((String) record.get("serial_number"))
+                            .setModel((String) record.get("model"))
+                            .setType((String) record.get("type"))
+                            .setPurchaseDate(Date.valueOf((String) record.get("purchase_date")))
+                            .build();
+
+                    // Додавання у MongoDB
+                    equipmentDAO.addEquipment(equipment);
+                    success = true; // Успішний запис
+                } catch (Exception e) {
+                    attempt++;
+                    System.out.println("Помилка запису: " + e.getMessage() + ". Спроба " + attempt);
+                    if (attempt < retries) {
+                        try {
+                            Thread.sleep(1000); // Затримка перед повторною спробою
+                        } catch (InterruptedException ignored) {
+                        }
+                    } else {
+                        System.out.println("Не вдалося записати документ після " + retries + " спроб: " + record);
+                    }
+                }
+            }
+        }
+        System.out.println("Перевірка записаних документів...");
+        List<Equipment> allEquipment = equipmentDAO.getAllEquipment();
+        System.out.println("Записано документів: " + allEquipment.size());
+        System.out.println("Очікувано документів: " + equipmentRecords.size());
     }
 }
+
+
+
+
+//public static void main(String[] args) {
+//    MySQLDAOFactory mySQLFactory = new MySQLDAOFactory();
+//    MongoDBDAOFactory mongoDBFactory = new MongoDBDAOFactory();
+//
+//    // Створення екземпляра MigrationService
+//    MigrationService migrationService = new MigrationService(mySQLFactory, mongoDBFactory);
+//
+//    // Виконання міграції з MySQL до MongoDB
+//    System.out.println("=== Міграція з MySQL до MongoDB ===");
+//    migrationService.migrateMySQLToMongoDB();
+//
+//    // Виконання міграції з MongoDB до MySQL
+//    System.out.println("=== Міграція з MongoDB до MySQL ===");
+//    migrationService.migrateMongoDBToMySQL();
+//}
+
 
 //    public static void main(String[] args) {
 //        MySQLEquipmentDAO mySQLDAO = new MySQLEquipmentDAO();
